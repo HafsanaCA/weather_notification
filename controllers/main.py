@@ -14,7 +14,6 @@ class WeatherNotification(http.Controller):
 
         if not request.env.user.api_key:
             return {'data': False, 'description': 'API key is not configured.'}
-
         try:
             if request.env.user.location_set == 'auto':
                 g = geocoder.ip('me')
@@ -24,6 +23,8 @@ class WeatherNotification(http.Controller):
                     lng = round(lng, 2)
                     url = f'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&appid={request.env.user.api_key}'
                     response = requests.get(url, timeout=10)
+                    print("Detected location from IP:", lat, lng)
+                    print("Geocoder response:", g.json)
                     if response.status_code == 200:
                         weather_data = response.json()
                     else:
@@ -41,5 +42,4 @@ class WeatherNotification(http.Controller):
                 weather_data['description'] = 'City not specified for manual location.'
         except Exception as e:
             weather_data['description'] = f'Error fetching weather data: {str(e)}'
-
         return weather_data

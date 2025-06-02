@@ -16,6 +16,7 @@ class WeatherSystray extends Component {
             temp_min: "",
             temp_max: "",
             icon: "",
+            wind_speed: "",
             updated_at: "",
             hasData: false,
         });
@@ -28,6 +29,8 @@ class WeatherSystray extends Component {
             const result = await rpc("/weather/notification/check");
             const main = result.main;
             const weather = result.weather[0];
+            const wind = result.wind || {};
+            const sys = result.sys || {};
 
             this.state.city = result.name;
             this.state.main = weather.main;
@@ -36,6 +39,7 @@ class WeatherSystray extends Component {
             this.state.temp_min = (main.temp_min - 273.15).toFixed(1);
             this.state.temp_max = (main.temp_max - 273.15).toFixed(1);
             this.state.icon = weather.icon;
+            this.state.wind_speed = wind.speed ? `${wind.speed} m/s` : "N/A";
             this.state.updated_at = new Date(result.dt * 1000).toLocaleString();
             this.state.hasData = true;
         } catch (error) {
